@@ -10,6 +10,7 @@ global:
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
   - "alert.rules"
+  - "elasticsearch.rules"
 
 # A scrape configuration containing exactly one endpoint to scrape.
 scrape_configs:
@@ -34,6 +35,24 @@ scrape_configs:
     static_configs:
       - targets: ['pushgateway:9091']
 
+  - job_name: elasticsearch
+    scrape_interval: 60s
+    scrape_timeout:  30s
+    metrics_path: "/metrics"
+    static_configs:    
+    - targets: ['elasticsearch:9108']
+      labels:
+        service: elasticsearch
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*)\:9108'
+        target_label: 'instance'
+        replacement: '$1'
+      - source_labels: [__address__]
+        regex: '.*\.(.*)\.lan.*'
+        target_label: 'environment'
+        replacement: '$1'
+  
 
 alerting:
   alertmanagers:
@@ -42,10 +61,10 @@ alerting:
     - targets: 
       - 'alertmanager:9093'
 
-#  - job_name: 'nginx'
-#    scrape_interval: 10s
-#    static_configs:
-#      - targets: ['nginxexporter:9113']
+  # - job_name: 'nginx'
+  #   scrape_interval: 10s
+  #   static_configs:
+  #   - targets: ['nginxexporter:9113']
 
 #  - job_name: 'aspnetcore'
 #    scrape_interval: 10s
