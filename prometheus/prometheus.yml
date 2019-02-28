@@ -45,11 +45,11 @@ scrape_configs:
         service: elasticsearch
     relabel_configs:
       - source_labels: [__address__]
-        regex: '(.*)\:9108'
+        regex: '(.*)\:9114'
         target_label: 'instance'
         replacement: '$1'
       - source_labels: [__address__]
-        regex: '.*\.(.*)\.lan.*'
+        regex: '.*\.(.*).*'
         target_label: 'environment'
         replacement: '$1'
   
